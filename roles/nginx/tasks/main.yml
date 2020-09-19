@@ -1,0 +1,85 @@
+---
+# tasks file for Nginx
+- name: ensure deployment
+  community.kubernetes.k8s:
+    definition:
+      kind: Deployment
+      apiVersion: apps/v1
+      metadata:
+        name: '{{ ansible_operator_meta.name }}'
+        namespace: '{{ ansible_operator_meta.namespace }}'
+      spec:
+        replicas: "{{ replicas }}"
+        selector:
+          matchLabels:
+            app: "{{ ansible_operator_meta.name }}"
+        template:
+          metadata:
+            labels:
+              app: "{{ ansible_operator_meta.name }}"
+          spec:
+            containers:
+              - name: nginx
+                command:
+                  - sh
+                args:
+                  - "-c"
+                  - "echo '{{ message }}' > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"
+                image: "{{ image }}"
+                ports:
+                  - name: http
+                    containerPort: 80
+                    protocol: TCP
+
+- name: Ensure service
+  community.kubernetes.k8s:
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: '{{ ansible_operator_meta.name }}'
+        namespace: '{{ ansible_operator_meta.namespace }}'
+      spec:
+        type: ClusterIP
+        ports:
+          - port: 80
+            targetPort: "http"
+        selector:
+          app: "{{ ansible_operator_meta.name }}"
+
+- name: Ensure ingress
+  when: ingress.enabled
+  community.kubernetes.k8s:
+    definition:
+      apiVersion: networking.k8s.io/v1beta1
+      kind: Ingress
+      metadata:
+        name: '{{ ansible_operator_meta.name }}'
+        namespace: '{{ ansible_operator_meta.namespace }}'
+      spec:
+        rules:
+          - host: "{{ ingress.hostname }}"
+            http:
+              paths:
+                - backend:
+                    serviceName: '{{ ansible_operator_meta.name }}'
+                    servicePort: 80
+
+- name: Ensure not ingress
+  when: not ingress.enabled
+  community.kubernetes.k8s:
+    state: absent
+    definition:
+      apiVersion: networking.k8s.io/v1beta1
+      kind: Ingress
+      metadata:
+        name: '{{ ansible_operator_meta.name }}'
+        namespace: '{{ ansible_operator_meta.namespace }}'
+      spec:
+        rules:
+          - host: "{{ ingress.hostname }}"
+            http:
+              paths:
+                - backend:
+                    serviceName: '{{ ansible_operator_meta.name }}'
+                    servicePort: 80

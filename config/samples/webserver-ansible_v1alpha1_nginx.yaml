@@ -1,0 +1,11 @@
+apiVersion: webserver-ansible.mklug.at/v1alpha1
+kind: Nginx
+metadata:
+  name: nginx-sample
+spec:
+  replicas: 1
+  image: nginx
+  message: "<h1>hello from the ansible operator</h1>"
+  ingress:
+    enabled: true
+    hostname: nginx.example.com
