@@ -3,7 +3,7 @@ kind: Nginx
 metadata:
   name: nginx-sample
 spec:
-  replicas: 1
+  replicas: 3
   image: nginx
   message: "<h1>hello from the ansible operator</h1>"
   ingress:

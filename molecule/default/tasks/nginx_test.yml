@@ -13,7 +13,52 @@
   vars:
     cr_file: 'webserver-ansible_v1alpha1_nginx.yaml'
 
-- name: Add assertions here
+- name: Nginx
+  debug:
+    var: cm
+  vars:
+    cm: '{{ lookup("community.kubernetes.k8s", api_version="webserver-ansible.mklug.at/v1alpha1", kind="Nginx",
+    namespace=namespace, resource_name="nginx-sample") }}'
+
+- name: Nginx replicas
   assert:
-    that: false
-    fail_msg: FIXME Add real assertions for your operator
+    that: cm.spec.replicas == 3
+  vars:
+    cm: '{{ lookup("community.kubernetes.k8s", api_version="webserver-ansible.mklug.at/v1alpha1", kind="Nginx",
+    namespace=namespace, resource_name="nginx-sample") }}'
+
+- name: Nginx ingress hostname
+  assert:
+    that: cm.spec.ingress.hostname == "nginx.example.com"
+  vars:
+    cm: '{{ lookup("community.kubernetes.k8s", api_version="webserver-ansible.mklug.at/v1alpha1", kind="Nginx",
+    namespace=namespace,
+    resource_name="nginx-sample") }}'
+
+- name: Deployment
+  debug:
+    var: cm
+  vars:
+    cm: '{{ lookup("community.kubernetes.k8s", api_version="apps/v1", kind="Deployment", namespace=namespace,
+            resource_name="nginx-sample") }}'
+
+- name: Deployment replicas
+  assert:
+    that: cm.spec.replicas == 3
+  vars:
+    cm: '{{ lookup("community.kubernetes.k8s", api_version="apps/v1", kind="Deployment", namespace=namespace,
+    resource_name="nginx-sample") }}'
+
+- name: Ingress
+  debug:
+    var: cm
+  vars:
+    cm: '{{ lookup("community.kubernetes.k8s", api_version="extensions/v1beta1", kind="Ingress", namespace=namespace,
+            resource_name="nginx-sample") }}'
+
+- name: Ingress hostname
+  assert:
+    that: cm.spec.rules[0].host == "nginx.example.com"
+  vars:
+    cm: '{{ lookup("community.kubernetes.k8s", api_version="extensions/v1beta1", kind="Ingress", namespace=namespace,
+    resource_name="nginx-sample") }}'

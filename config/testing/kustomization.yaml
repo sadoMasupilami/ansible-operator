@@ -20,4 +20,5 @@ resources:
 - ../manager
 images:
 - name: testing
-  newName: testing-operator
+  newName: sadomasupilami/ansible-operator
+  newTag: latest
