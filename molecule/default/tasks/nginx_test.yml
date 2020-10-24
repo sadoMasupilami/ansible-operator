@@ -15,50 +15,50 @@
 
 - name: Nginx
   debug:
-    var: cm
+    var: nginx
   vars:
-    cm: '{{ lookup("community.kubernetes.k8s", api_version="webserver-ansible.mklug.at/v1alpha1", kind="Nginx",
+    nginx: '{{ lookup("community.kubernetes.k8s", api_version="webserver-ansible.mklug.at/v1alpha1", kind="Nginx",
     namespace=namespace, resource_name="nginx-sample") }}'
 
 - name: Nginx replicas
   assert:
-    that: cm.spec.replicas == 3
+    that: nginx.spec.replicas == 3
   vars:
-    cm: '{{ lookup("community.kubernetes.k8s", api_version="webserver-ansible.mklug.at/v1alpha1", kind="Nginx",
+    nginx: '{{ lookup("community.kubernetes.k8s", api_version="webserver-ansible.mklug.at/v1alpha1", kind="Nginx",
     namespace=namespace, resource_name="nginx-sample") }}'
 
 - name: Nginx ingress hostname
   assert:
-    that: cm.spec.ingress.hostname == "nginx.example.com"
+    that: nginx.spec.ingress.hostname == "nginx.example.com"
   vars:
-    cm: '{{ lookup("community.kubernetes.k8s", api_version="webserver-ansible.mklug.at/v1alpha1", kind="Nginx",
+    nginx: '{{ lookup("community.kubernetes.k8s", api_version="webserver-ansible.mklug.at/v1alpha1", kind="Nginx",
     namespace=namespace,
     resource_name="nginx-sample") }}'
 
 - name: Deployment
   debug:
-    var: cm
+    var: deployment
   vars:
-    cm: '{{ lookup("community.kubernetes.k8s", api_version="apps/v1", kind="Deployment", namespace=namespace,
+    deployment: '{{ lookup("community.kubernetes.k8s", api_version="apps/v1", kind="Deployment", namespace=namespace,
             resource_name="nginx-sample") }}'
 
 - name: Deployment replicas
   assert:
-    that: cm.spec.replicas == 3
+    that: deployment.spec.replicas == 3
   vars:
-    cm: '{{ lookup("community.kubernetes.k8s", api_version="apps/v1", kind="Deployment", namespace=namespace,
+    deployment: '{{ lookup("community.kubernetes.k8s", api_version="apps/v1", kind="Deployment", namespace=namespace,
     resource_name="nginx-sample") }}'
 
 - name: Ingress
   debug:
-    var: cm
+    var: ingress
   vars:
-    cm: '{{ lookup("community.kubernetes.k8s", api_version="extensions/v1beta1", kind="Ingress", namespace=namespace,
+    ingress: '{{ lookup("community.kubernetes.k8s", api_version="extensions/v1beta1", kind="Ingress", namespace=namespace,
             resource_name="nginx-sample") }}'
 
 - name: Ingress hostname
   assert:
-    that: cm.spec.rules[0].host == "nginx.example.com"
+    that: ingress.spec.rules[0].host == "nginx.example.com"
   vars:
-    cm: '{{ lookup("community.kubernetes.k8s", api_version="extensions/v1beta1", kind="Ingress", namespace=namespace,
+    ingress: '{{ lookup("community.kubernetes.k8s", api_version="extensions/v1beta1", kind="Ingress", namespace=namespace,
     resource_name="nginx-sample") }}'
